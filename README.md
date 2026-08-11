@@ -9,6 +9,14 @@
   <a href="https://github.com/ia-toki/judgels/blob/master/LICENSE.txt"><img alt="License" src="https://img.shields.io/github/license/ia-toki/judgels.svg"/></a>
 </div>
 
+## Judgels Custom
+
+Customized deployment of [Judgels](https://github.com/ia-toki/judgels).
+
+This repository contains modifications used for my Judgels deployment.
+The original Judgels project is licensed under the GNU General Public
+License version 2. See the repository's license files for details.
+
 ## Usage
 
 Judgels has been used for:
