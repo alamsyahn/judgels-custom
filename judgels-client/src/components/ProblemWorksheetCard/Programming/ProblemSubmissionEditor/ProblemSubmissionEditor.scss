@@ -61,3 +61,31 @@
     }
   }
 }
+
+/* Custom layout for vertically stacked course problems. */
+.problem-submission-editor {
+  flex-grow: 0;
+  margin-bottom: 1px;
+
+  form {
+    height: auto;
+    align-items: stretch;
+
+    .form-group-editor {
+      flex-grow: 0;
+      height: 420px;
+      min-height: 320px;
+    }
+
+    .editor-file-separator {
+      width: 100%;
+      margin: 16px 0 12px;
+      text-align: center;
+    }
+
+    .editor-options-table {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+  }
+}

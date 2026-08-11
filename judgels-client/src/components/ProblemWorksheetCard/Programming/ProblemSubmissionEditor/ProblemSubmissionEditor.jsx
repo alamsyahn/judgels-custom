@@ -14,8 +14,15 @@ import { VerdictCode } from '../../../../modules/api/gabriel/verdict.js';
 import { decodeBase64 } from '../../../../utils/base64';
 import { ContentCard } from '../../../ContentCard/ContentCard';
 import FormAceEditor from '../../../forms/FormAceEditor/FormAceEditor';
-import { FormSelect2 } from '../../../forms/FormSelect2/FormSelect2';
-import { MaxCodeLength50KB, Required, composeValidators } from '../../../forms/validations';
+import { FormTableFileInput } from '../../../forms/FormTableFileInput/FormTableFileInput';
+import { FormTableSelect2 } from '../../../forms/FormTableSelect2/FormTableSelect2';
+import {
+  CompatibleFilenameExtensionForGradingLanguage,
+  MaxCodeLength50KB,
+  MaxFileSize300KB,
+  Required,
+  composeValidators,
+} from '../../../forms/validations';
 import { ProblemSubmissionSummary } from '../ProblemSubmissionSummary/ProblemSubmissionSummary';
 
 import './ProblemSubmissionEditor.scss';
@@ -38,9 +45,13 @@ export class ProblemSubmissionEditor extends Component {
 
     const sourceFiles = {};
     Object.keys(sourceKeys).forEach(key => {
-      sourceFiles[key] = new File([data.editor], getGradingLanguageEditorSubmissionFilename(data.gradingLanguage), {
-        type: 'text/plain',
-      });
+      const uploadedFile = data.sourceFiles && data.sourceFiles[key];
+
+      sourceFiles[key] =
+        uploadedFile ||
+        new File([data.editor], getGradingLanguageEditorSubmissionFilename(data.gradingLanguage), {
+          type: 'text/plain',
+        });
     });
 
     const { submission, submissionUrl } = await onSubmit({
@@ -89,7 +100,7 @@ export class ProblemSubmissionEditor extends Component {
       onReset,
       skeletons,
       lastSubmissionSource,
-      config: { gradingEngine, gradingLanguageRestriction },
+      config: { gradingEngine, gradingLanguageRestriction, sourceKeys },
       reasonNotAllowedToSubmit,
       preferredGradingLanguage,
       renderNavigation,
@@ -112,16 +123,38 @@ export class ProblemSubmissionEditor extends Component {
 
     const gradingLanguageField = {
       name: 'gradingLanguage',
+      label: 'Language',
       validate: Required,
       optionValues: gradingLanguages,
       optionNamesMap: gradingLanguageNamesMap,
-      small: true,
+    };
+
+    const validateEditor = (value, allValues) => {
+      const sourceFiles = (allValues && allValues.sourceFiles) || {};
+      const hasUploadedFile = Object.keys(sourceFiles).some(key => sourceFiles[key]);
+
+      if (hasUploadedFile) {
+        return undefined;
+      }
+
+      return composeValidators(Required, MaxCodeLength50KB)(value, allValues);
     };
 
     const editorField = {
       name: 'editor',
-      validate: composeValidators(Required, MaxCodeLength50KB),
+      validate: validateEditor,
       autoFocus: true,
+    };
+
+    const validateSourceFile = (value, allValues) => {
+      if (!value) {
+        return undefined;
+      }
+
+      return composeValidators(
+        MaxFileSize300KB,
+        CompatibleFilenameExtensionForGradingLanguage
+      )(value, allValues);
     };
 
     const initialValues = {
@@ -150,24 +183,49 @@ export class ProblemSubmissionEditor extends Component {
 
           return (
             <form onSubmit={handleSubmit} className={classNames({ show: this.state.isResponsiveButtonClicked })}>
-              <div className="editor-header">
-                <Field component={FormSelect2} {...gradingLanguageField} />
-                {canReset && (
+              {canReset && (
+                <div className="editor-header">
                   <Button className="reset-button" small text="Reset code" intent={Intent.NONE} onClick={onReset} />
-                )}
-              </div>
+                </div>
+              )}
+
               {submissionHint && (
                 <p>
                   <small>{submissionHint}</small>
                 </p>
               )}
+
               <Field component={FormAceEditor} {...editorField} gradingLanguage={values.gradingLanguage} />
+
+              <div className="editor-file-separator">
+                <small>... or submit source code file</small>
+              </div>
+
+              <table className="editor-options-table">
+                <tbody>
+                  {Object.keys(sourceKeys)
+                    .sort()
+                    .map(key => {
+                      const sourceFileField = {
+                        name: 'sourceFiles.' + key,
+                        label: sourceKeys[key],
+                        validate: validateSourceFile,
+                      };
+
+                      return <Field key={key} component={FormTableFileInput} {...sourceFileField} />;
+                    })}
+
+                  <Field component={FormTableSelect2} {...gradingLanguageField} />
+                </tbody>
+              </table>
+
               <ProblemSubmissionSummary
                 submissionJid={this.state.lastSubmissionJid}
                 submission={this.state.submission}
                 submissionUrl={this.state.submissionUrl}
                 onClose={this.closeSubmissionSummary}
               />
+
               <div className="editor-buttons">
                 <Button
                   type="submit"
@@ -200,6 +258,7 @@ export class ProblemSubmissionEditor extends Component {
   render() {
     return (
       <ContentCard className="problem-submission-editor">
+        <h4>Submit solution</h4>
         {this.renderResponsiveButton()}
         {this.renderEditor()}
       </ContentCard>
