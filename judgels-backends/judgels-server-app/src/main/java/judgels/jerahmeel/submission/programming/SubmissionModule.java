@@ -45,6 +45,12 @@ public class SubmissionModule {
 
     @Provides
     @Singleton
+    StatsConfiguration statsConfiguration() {
+        return statsConfig;
+    }
+
+    @Provides
+    @Singleton
     @SubmissionFs
     FileSystem submissionFs(Optional<AwsConfiguration> awsConfig, @JudgelsBaseDataDir Path baseDataDir) {
         return FileSystems.get(config.getFs(), awsConfig, baseDataDir.resolve("submissions"));

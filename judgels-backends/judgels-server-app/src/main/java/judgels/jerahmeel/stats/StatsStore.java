@@ -289,13 +289,26 @@ public class StatsStore {
                 .build();
     }
 
-    public Page<UserTopStatsEntry> getTopUserStats(int pageNumber, int pageSize) {
-        return statsUserDao
-                .select()
-                .orderBy(StatsUserModel_.SCORE, OrderDir.DESC)
-                .orderBy(Model_.UPDATED_AT, OrderDir.ASC)
-                .paged(pageNumber, pageSize)
-                .mapPage(models -> Lists.transform(models, m ->
-                        new UserTopStatsEntry.Builder().userJid(m.userJid).totalScores(m.score).build()));
+    public Page<UserTopStatsEntry> getTopUserStats(
+            int pageNumber,
+            int pageSize,
+            Set<String> excludedUserJids) {
+
+        var query = statsUserDao.select();
+
+        if (!excludedUserJids.isEmpty()) {
+            query = query.where((cb, cq, root) ->
+                cb.not(root.get("userJid").in(excludedUserJids)));
+        }
+
+        return query
+            .orderBy(StatsUserModel_.SCORE, OrderDir.DESC)
+            .orderBy(Model_.UPDATED_AT, OrderDir.ASC)
+            .paged(pageNumber, pageSize)
+            .mapPage(models -> Lists.transform(models, m ->
+                new UserTopStatsEntry.Builder()
+                    .userJid(m.userJid)
+                    .totalScores(m.score)
+                    .build()));
     }
 }

@@ -11,7 +11,9 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import judgels.jerahmeel.api.stats.UserStats;
 import judgels.jerahmeel.api.stats.UserTopStatsEntry;
 import judgels.jerahmeel.api.stats.UserTopStatsResponse;
@@ -23,6 +25,7 @@ import judgels.persistence.api.Page;
 public class UserStatsResource {
     @Inject protected StatsStore statsStore;
     @Inject protected JophielClient jophielClient;
+    @Inject protected StatsConfiguration statsConfig;
 
     @Inject public UserStatsResource() {}
 
@@ -34,7 +37,16 @@ public class UserStatsResource {
             @QueryParam("page") @DefaultValue("1") int pageNumber,
             @QueryParam("pageSize") @DefaultValue("50") int pageSize) {
 
-        Page<UserTopStatsEntry> stats = statsStore.getTopUserStats(pageNumber, pageSize);
+        Set<String> excludedUserJids = new HashSet<>();
+
+        for (String username : statsConfig.getExcludedTopScorerUsernames()) {
+            jophielClient
+                    .translateUsernameToJid(username)
+                    .ifPresent(excludedUserJids::add);
+        }
+
+        Page<UserTopStatsEntry> stats =
+                statsStore.getTopUserStats(pageNumber, pageSize, excludedUserJids);
 
         var userJids = Lists.transform(stats.getPage(), UserTopStatsEntry::getUserJid);
         Map<String, Profile> profileMap = jophielClient.getProfiles(userJids);
