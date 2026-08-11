@@ -9,3 +9,18 @@
 .programming-problem-submission-form__warning {
   margin-bottom: 10px;
 }
+
+.programming-problem-submission-form__editor {
+  width: 100%;
+  margin-bottom: 12px;
+
+  .form-group-editor {
+    height: 420px;
+    min-height: 320px;
+  }
+}
+
+.programming-problem-submission-form__separator {
+  margin: 16px 0 12px;
+  text-align: center;
+}
