@@ -1,5 +1,26 @@
 # AGENTS.md
 
+## Canonical repository
+
+The canonical repository for this customized Judgels installation is:
+
+`https://github.com/alamsyahn/judgels-custom`
+
+Remote policy:
+
+- `origin` = this customized repository
+- `upstream` = `https://github.com/ia-toki/judgels.git`
+- production branch = `custom-course-ui`
+
+This repository, not the upstream Judgels repository, is the source of truth
+for the deployed frontend.
+
+When investigating or modifying this installation, always inspect the current
+`origin/custom-course-ui` branch first.
+
+Use `upstream` only to research official Judgels code or selectively backport
+changes.
+
 ## Scope
 
 This repository contains a customized Judgels frontend used in production.
