@@ -11,36 +11,6 @@ import { selectCourseChapter } from '../../../../../modules/courseChapterSelecto
 import './ChapterProblemStatementPage.scss';
 
 function ChapterProblemStatementPage({ worksheet }) {
-  const renderTimeLimit = timeLimit => {
-    if (!timeLimit) {
-      return '-';
-    }
-    if (timeLimit % 1000 === 0) {
-      return timeLimit / 1000 + ' s';
-    }
-    return timeLimit + ' ms';
-  };
-
-  const renderMemoryLimit = memoryLimit => {
-    if (!memoryLimit) {
-      return '-';
-    }
-    if (memoryLimit % 1024 === 0) {
-      return memoryLimit / 1024 + ' MB';
-    }
-    return memoryLimit + ' KB';
-  };
-
-  const renderLimits = () => {
-    const { timeLimit, memoryLimit } = worksheet.worksheet.limits;
-    return (
-      <small className="statement-header__limits">
-        Time limit:&nbsp;&nbsp;{renderTimeLimit(timeLimit)}
-        &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;Memory limit:&nbsp;&nbsp;{renderMemoryLimit(memoryLimit)}
-      </small>
-    );
-  };
-
   const renderProblemSetProblemPaths = () => {
     const { problemSetProblemPaths } = worksheet;
     if (!problemSetProblemPaths) {
@@ -65,7 +35,6 @@ function ChapterProblemStatementPage({ worksheet }) {
     return (
       <div className="statement-header">
         <StatementLanguageWidget {...props} />
-        {renderLimits()}
         {renderProblemSetProblemPaths()}
       </div>
     );
@@ -96,8 +65,8 @@ function ChapterProblemStatementPage({ worksheet }) {
       <ProblemWorksheetCard
         alias={problem.alias}
         worksheet={worksheet.worksheet}
-        showTitle={false}
-        showLimits={false}
+        showTitle
+        showLimits
       />
     );
   };
