@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import judgels.gabriel.api.ScoringConfig;
 import judgels.jophiel.api.profile.Profile;
 import judgels.sandalphon.api.submission.bundle.ItemSubmission;
+import judgels.sandalphon.api.submission.bundle.Verdict;
 import judgels.sandalphon.api.submission.programming.Submission;
 import judgels.uriel.api.contest.Contest;
 import judgels.uriel.api.contest.contestant.ContestContestant;
@@ -80,6 +81,9 @@ public class BundleScoreboardProcessor implements ScoreboardProcessor {
                                     .getOrDefault(contestantJid, Collections.emptyList())
                                     .stream()
                                     .filter(submission -> submission.getProblemJid().equals(problemJid))
+                                    .filter(submission -> submission.getGrading()
+                                            .map(grading -> grading.getVerdict() == Verdict.ACCEPTED)
+                                            .orElse(false))
                                     .count()
                             )
                             .map(c -> c.intValue())
