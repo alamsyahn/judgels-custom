@@ -19,10 +19,6 @@ export default class ItemShortAnswerForm extends PureComponent {
     wrongFormat: this.props.answerState === AnswerState.NotAnswered,
   };
 
-  componentDidUpdate() {
-    this._input.focus();
-  }
-
   renderHelpText() {
     switch (this.state.answerState) {
       case AnswerState.NotAnswered:
