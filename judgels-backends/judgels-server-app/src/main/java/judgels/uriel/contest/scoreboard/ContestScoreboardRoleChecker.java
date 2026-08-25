@@ -5,6 +5,7 @@ import static judgels.uriel.api.contest.supervisor.SupervisorManagementPermissio
 
 import jakarta.inject.Inject;
 import judgels.uriel.api.contest.Contest;
+import judgels.uriel.api.contest.ContestStyle;
 import judgels.uriel.contest.ContestRoleChecker;
 import judgels.uriel.contest.ContestTimer;
 import judgels.uriel.contest.problem.ContestProblemStore;
@@ -40,7 +41,9 @@ public class ContestScoreboardRoleChecker {
         if (canSupervise(userJid, contest)) {
             return true;
         }
-        return contestRoleDao.isViewerOrAbove(userJid, contest.getJid()) && contestTimer.hasStarted(contest, userJid);
+        return contestRoleDao.isViewerOrAbove(userJid, contest.getJid())
+                && contestTimer.hasStarted(contest, userJid)
+                && (contest.getStyle() != ContestStyle.BUNDLE || contestTimer.hasFinished(contest, userJid));
     }
 
     public boolean canViewOfficialAndFrozen(String userJid, Contest contest) {
