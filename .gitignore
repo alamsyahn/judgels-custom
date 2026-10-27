@@ -1,2 +1,5 @@
 .DS_Store
 *.log*.tmp
+
+# Private deployment settings on this computer
+/.env.deploy.local

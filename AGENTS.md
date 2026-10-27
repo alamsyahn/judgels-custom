@@ -1,5 +1,39 @@
 # AGENTS.md
 
+## Required development and deployment workflow
+
+Read `docs/DEVELOPMENT_AND_DEPLOYMENT.md` before implementing, testing, pushing,
+or deploying changes. It records the owner's agreed workflow and data-preservation
+rules. Apply it together with the installation-specific instructions below.
+
+- Develop locally on a task branch based on current `origin/custom-course-ui`;
+  preserve any existing uncommitted work.
+- Let the owner review a working local preview before pushing or deploying.
+- Frontend-only previews may use the production API and create real test
+  submissions. This does not authorize deleting or resetting production data.
+- Changed backend code must be tested against an isolated copy of production
+  data and required files, never by connecting it to the live production database.
+- Push and production deployment require the owner's approval of the reviewed
+  result. One explicit approval for both covers the agreed sequence; do not ask
+  again for each routine step. This policy is not approval of a future change.
+- Deploy the exact approved Git commit through SSH; record its revision,
+  validation, backups, and rollback information without secrets.
+- Read `DEPLOY_SSH_HOST` from the ignored root file `.env.deploy.local` for
+  the SSH destination. Read it as configuration data, not executable shell code.
+  Use the configured SSH alias; keep its actual value out of tracked files.
+  If missing or unavailable, report the missing configuration; do not guess a
+  host or user, publish SSH credentials, or disable host-key verification.
+- For backend deployments, verify a recoverable backup and a compatible rollback
+  plan before replacing services or applying migrations.
+- Explain migrations before deployment. Destructive migrations, data deletion,
+  and database restoration require separate explicit approval describing the
+  affected data; ordinary deploy approval does not cover them.
+- Never delete production database storage, problem files, or Docker data volumes
+  as part of a routine deploy. Never commit secrets or production data backups.
+
+These files document policy; they do not prove that preview, SSH, backups,
+deployment automation, or technical access restrictions are configured.
+
 ## Canonical repository
 
 The canonical repository for this customized Judgels installation is:
