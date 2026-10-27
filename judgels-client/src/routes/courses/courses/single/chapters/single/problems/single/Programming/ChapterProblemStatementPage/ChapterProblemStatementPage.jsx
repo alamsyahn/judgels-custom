@@ -63,7 +63,7 @@ function ChapterProblemStatementPage({ worksheet }) {
 
     return (
       <ProblemWorksheetCard
-        alias={problem.alias}
+        alias={worksheet.navigation?.current?.displayAlias || problem.alias}
         worksheet={worksheet.worksheet}
         showTitle
         showLimits

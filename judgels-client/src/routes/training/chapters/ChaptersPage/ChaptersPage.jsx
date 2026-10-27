@@ -7,6 +7,7 @@ import { ChapterCreateDialog } from '../ChapterCreateDialog/ChapterCreateDialog'
 import { ChapterEditDialog } from '../ChapterEditDialog/ChapterEditDialog';
 import { ChapterLessonEditDialog } from '../ChapterLessonEditDialog/ChapterLessonEditDialog';
 import { ChapterProblemEditDialog } from '../ChapterProblemEditDialog/ChapterProblemEditDialog';
+import { ChapterResourceEditDialog } from '../ChapterResourceEditDialog/ChapterResourceEditDialog';
 import { ChaptersTable } from '../ChaptersTable/ChaptersTable';
 
 import * as chapterActions from '../modules/chapterActions';
@@ -17,6 +18,7 @@ class ChaptersPage extends Component {
     isEditDialogOpen: false,
     isEditLessonsDialogOpen: false,
     isEditProblemsDialogOpen: false,
+    isEditResourcesDialogOpen: false,
     editedChapter: undefined,
   };
 
@@ -33,6 +35,13 @@ class ChaptersPage extends Component {
         {this.renderEditDialog()}
         {this.renderEditLessonsDialog()}
         {this.renderEditProblemsDialog()}
+        <ChapterResourceEditDialog
+          isOpen={this.state.isEditResourcesDialogOpen}
+          chapter={this.state.editedChapter}
+          onGetResources={this.props.onGetResources}
+          onSetResources={this.props.onSetResources}
+          onCloseDialog={() => this.editChapterResources(undefined)}
+        />
         {this.renderChapters()}
       </ContentCard>
     );
@@ -106,6 +115,7 @@ class ChaptersPage extends Component {
         onEditChapter={this.editChapter}
         onEditChapterLessons={this.editChapterLessons}
         onEditChapterProblems={this.editChapterProblems}
+        onEditChapterResources={this.editChapterResources}
       />
     );
   };
@@ -141,6 +151,10 @@ class ChaptersPage extends Component {
       editedChapter: chapter,
     });
   };
+
+  editChapterResources = chapter => {
+    this.setState({ isEditResourcesDialogOpen: !!chapter, editedChapter: chapter });
+  };
 }
 
 const mapDispatchToProps = {
@@ -151,5 +165,7 @@ const mapDispatchToProps = {
   onSetLessons: chapterActions.setLessons,
   onGetProblems: chapterActions.getProblems,
   onSetProblems: chapterActions.setProblems,
+  onGetResources: chapterActions.getResources,
+  onSetResources: chapterActions.setResources,
 };
 export default connect(undefined, mapDispatchToProps)(ChaptersPage);

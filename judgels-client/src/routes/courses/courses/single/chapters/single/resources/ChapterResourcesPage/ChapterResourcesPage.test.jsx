@@ -17,8 +17,15 @@ describe('ChapterResourcesPage', () => {
   let wrapper;
   let lessons;
   let problems;
+  let problemSetProblemPathsMap = {};
 
-  const render = async () => {
+  const render = async (
+    resources = [
+      ...lessons.map(lesson => ({ type: 'LESSON', resourceJid: lesson.lessonJid, section: 'MAIN' })),
+      ...problems.map(problem => ({ type: 'PROBLEM', resourceJid: problem.problemJid, section: 'MAIN' })),
+    ].map((item, index) => ({ ...item, displayAlias: String.fromCharCode(65 + index) }))
+  ) => {
+    wrapper?.unmount();
     chapterResourceActions.getResources.mockReturnValue(() =>
       Promise.resolve([
         {
@@ -50,11 +57,12 @@ describe('ChapterResourcesPage', () => {
               defaultLanguage: 'en',
             },
           },
-          problemSetProblemPathsMap: {},
+          problemSetProblemPathsMap,
           problemProgressesMap: {
             problemJid1: { verdict: 'AC', score: 100 },
           },
         },
+        resources,
       ])
     );
 
@@ -88,6 +96,14 @@ describe('ChapterResourcesPage', () => {
     wrapper.update();
   };
 
+  beforeEach(() => {
+    problemSetProblemPathsMap = {};
+  });
+  afterEach(() => {
+    wrapper?.unmount();
+    wrapper = undefined;
+  });
+
   describe('when there are no resources', () => {
     beforeEach(async () => {
       lessons = [];
@@ -117,11 +133,31 @@ describe('ChapterResourcesPage', () => {
     it('shows the resources', () => {
       const cards = wrapper.find('a.content-card-link');
       expect(cards.map(card => [card.text(), card.find('a').props().href])).toEqual([
-        ['X. Lesson X', '/courses/courseSlug/chapters/chapter-1/lessons/X'],
-        ['Y. Lesson Y', '/courses/courseSlug/chapters/chapter-1/lessons/Y'],
-        ['A. Problem Asolved  ', '/courses/courseSlug/chapters/chapter-1/problems/A'],
-        ['B. Problem B', '/courses/courseSlug/chapters/chapter-1/problems/B'],
+        ['A. Lesson X', '/courses/courseSlug/chapters/chapter-1/lessons/X'],
+        ['B. Lesson Y', '/courses/courseSlug/chapters/chapter-1/lessons/Y'],
+        ['C. Problem Asolved  ', '/courses/courseSlug/chapters/chapter-1/problems/A'],
+        ['D. Problem B', '/courses/courseSlug/chapters/chapter-1/problems/B'],
       ]);
+    });
+
+    it('interleaves lessons and problems without regrouping Problemset links, then restarts Challenge labels', async () => {
+      problemSetProblemPathsMap = { problemJid1: [['operators', 'A']] };
+      await render([
+        { type: 'LESSON', resourceJid: 'lessonJid1', section: 'MAIN', displayAlias: 'A' },
+        { type: 'PROBLEM', resourceJid: 'problemJid1', section: 'MAIN', displayAlias: 'B' },
+        { type: 'LESSON', resourceJid: 'lessonJid2', section: 'CHALLENGE', displayAlias: 'A' },
+        { type: 'PROBLEM', resourceJid: 'problemJid2', section: 'CHALLENGE', displayAlias: 'B' },
+      ]);
+      expect(wrapper.find('[data-key="name"]').map(node => node.text())).toEqual([
+        'A. Lesson X',
+        'B. Problem A',
+        'A. Lesson Y',
+        'B. Problem B',
+      ]);
+      expect(wrapper.text()).toContain('Challenges');
+      expect(wrapper.text()).toContain('operators/A');
+      expect(wrapper.text()).not.toContain('Practice Problems');
+      expect(wrapper.find('div.chapter-problem-card').last().hasClass('chapter-problem-card--future')).toBe(false);
     });
   });
 });

@@ -10,7 +10,10 @@ export function ChapterNavigation({
   nextResourcePath,
   chapters,
   disableNext,
+  navigation,
 }) {
+  const entersChallenges = navigation?.current?.section === 'MAIN' && navigation?.next?.section === 'CHALLENGE';
+  const isChallenge = navigation?.current?.section === 'CHALLENGE';
   const scrollToTop = () => {
     window.scrollTo(0, 0);
   };
@@ -39,12 +42,12 @@ export function ChapterNavigation({
     return (
       <ButtonLink
         small
-        disabled={disableNext}
+        disabled={disableNext && !entersChallenges && !isChallenge}
         intent={Intent.WARNING}
         to={`/courses/${courseSlug}/chapters/${chapterAlias}${nextResourcePath}`}
         onClick={scrollToTop}
       >
-        Next &nbsp;&nbsp;
+        {entersChallenges ? 'Lanjut ke Challenges' : 'Next'} &nbsp;&nbsp;
         <ChevronRight />
       </ButtonLink>
     );
@@ -61,7 +64,7 @@ export function ChapterNavigation({
           return (
             <ButtonLink
               small
-              disabled={disableNext}
+              disabled={disableNext && !isChallenge}
               intent={Intent.WARNING}
               to={`/courses/${courseSlug}/chapters/${chapters[i + 1].alias}`}
             >

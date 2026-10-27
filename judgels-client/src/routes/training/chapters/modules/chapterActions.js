@@ -1,9 +1,28 @@
 import { chapterAPI } from '../../../../modules/api/jerahmeel/chapter';
 import { chapterLessonAPI } from '../../../../modules/api/jerahmeel/chapterLesson';
 import { chapterProblemAPI } from '../../../../modules/api/jerahmeel/chapterProblem';
+import { chapterResourceAPI } from '../../../../modules/api/jerahmeel/chapterResource';
 import { selectToken } from '../../../../modules/session/sessionSelectors';
 
 import * as toastActions from '../../../../modules/toast/toastActions';
+
+export function getResources(chapterJid) {
+  return async (dispatch, getState) => {
+    const token = selectToken(getState());
+    return await Promise.all([
+      chapterLessonAPI.getLessons(token, chapterJid),
+      chapterProblemAPI.getProblems(token, chapterJid),
+      chapterResourceAPI.getResources(token, chapterJid),
+    ]);
+  };
+}
+
+export function setResources(chapterJid, data) {
+  return async (dispatch, getState) => {
+    await chapterResourceAPI.setResources(selectToken(getState()), chapterJid, data);
+    toastActions.showSuccessToast('Urutan konten tersimpan.');
+  };
+}
 
 export function createChapter(data) {
   return async (dispatch, getState) => {

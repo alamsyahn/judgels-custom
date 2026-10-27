@@ -10,6 +10,10 @@ import { LoadingState } from '../../../../../../../../../components/LoadingState
 import { selectCourse } from '../../../../../../modules/courseSelectors';
 import { selectCourseChapter } from '../../../../modules/courseChapterSelectors';
 import { selectCourseChapters } from '../../../../modules/courseChaptersSelectors';
+import {
+  ChapterChallengeNotice,
+  ChapterChallengeTag,
+} from '../../../resources/ChapterChallengeNotice/ChapterChallengeNotice';
 import { ChapterNavigation } from '../../../resources/ChapterNavigation/ChapterNavigation';
 
 import * as breadcrumbsActions from '../../../../../../../../../modules/breadcrumbs/breadcrumbsActions';
@@ -33,7 +37,11 @@ export class ChapterLessonPage extends Component {
       response,
     });
 
-    this.props.onPushBreadcrumb(this.props.match.url, response.lesson.alias);
+    const resource = response.navigation?.current;
+    this.props.onPushBreadcrumb(
+      this.props.match.url,
+      (resource?.section === 'CHALLENGE' ? 'Challenge ' : '') + (resource?.displayAlias || response.lesson.alias)
+    );
   }
 
   async componentDidUpdate(prevProps) {
@@ -52,6 +60,7 @@ export class ChapterLessonPage extends Component {
     return (
       <div className="chapter-lesson-page">
         {this.renderHeader()}
+        <ChapterChallengeNotice resource={this.state.response?.navigation?.current} />
         <ContentCard>
           {this.renderStatementLanguageWidget()}
           {this.renderStatement()}
@@ -78,7 +87,8 @@ export class ChapterLessonPage extends Component {
           &nbsp;
           <ChevronRight className="chapter-lesson-page__title--chevron" size={20} />
           &nbsp;
-          {match.params.lessonAlias}
+          {this.state.response?.navigation?.current?.displayAlias || match.params.lessonAlias}
+          <ChapterChallengeTag resource={this.state.response?.navigation?.current} />
         </h3>
 
         {this.renderPrevAndNextResourcePaths()}
@@ -109,7 +119,12 @@ export class ChapterLessonPage extends Component {
       return <LoadingState />;
     }
 
-    return <LessonStatementCard alias={response.lesson.alias} statement={response.statement} />;
+    return (
+      <LessonStatementCard
+        alias={response.navigation?.current?.displayAlias || response.lesson.alias}
+        statement={response.statement}
+      />
+    );
   };
 
   renderPrevAndNextResourcePaths = () => {
@@ -127,6 +142,7 @@ export class ChapterLessonPage extends Component {
         previousResourcePath={previousResourcePath}
         nextResourcePath={nextResourcePath}
         chapters={chapters}
+        navigation={response.navigation}
       />
     );
   };

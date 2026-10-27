@@ -20,4 +20,7 @@ public final class ChapterModel extends JudgelsModel {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     public String description;
+
+    @Column(columnDefinition = "TEXT")
+    public String resourceLayout;
 }

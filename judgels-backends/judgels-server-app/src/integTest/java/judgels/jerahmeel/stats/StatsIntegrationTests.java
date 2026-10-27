@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import judgels.gabriel.api.GradingResultDetails;
 import judgels.gabriel.api.SandboxExecutionResult;
 import judgels.gabriel.api.SandboxExecutionStatus;
@@ -478,7 +479,7 @@ class StatsIntegrationTests extends BaseJerahmeelIntegrationTests {
     }
 
     private void assertUserTopStats(String userJid1, int total1, String userJid2, int total2) {
-        assertThat(statsStore.getTopUserStats(1, 20).getPage())
+        assertThat(statsStore.getTopUserStats(1, 20, Set.of()).getPage())
                 .containsExactly(
                         new UserTopStatsEntry.Builder().userJid(userJid1).totalScores(total1).build(),
                         new UserTopStatsEntry.Builder().userJid(userJid2).totalScores(total2).build());

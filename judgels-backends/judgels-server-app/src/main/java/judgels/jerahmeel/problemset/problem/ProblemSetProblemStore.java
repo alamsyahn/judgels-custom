@@ -126,6 +126,7 @@ public class ProblemSetProblemStore {
         if (maybeModel.isPresent()) {
             ProblemSetProblemModel model = maybeModel.get();
             model.alias = alias;
+            model.type = type.name();
             return fromModel(problemDao.update(model), contestJids);
         } else {
             ProblemSetProblemModel model = new ProblemSetProblemModel();

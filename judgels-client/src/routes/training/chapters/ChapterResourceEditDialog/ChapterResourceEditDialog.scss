@@ -1,0 +1,32 @@
+.chapter-resource-editor {
+  width: 760px;
+  max-width: calc(100vw - 30px);
+
+  &__section {
+    margin-top: 24px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+  }
+
+  &__name {
+    flex: 1;
+    min-width: 180px;
+
+    small {
+      display: block;
+      margin-top: 4px;
+    }
+  }
+
+  &__controls {
+    display: flex;
+    gap: 6px;
+  }
+}

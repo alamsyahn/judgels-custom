@@ -11,14 +11,18 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import java.util.List;
+import java.util.Optional;
 import judgels.jerahmeel.api.chapter.Chapter;
 import judgels.jerahmeel.api.chapter.ChapterCreateData;
 import judgels.jerahmeel.api.chapter.ChapterUpdateData;
 import judgels.jerahmeel.api.chapter.ChaptersResponse;
+import judgels.jerahmeel.api.chapter.resource.ChapterResourceData;
+import judgels.jerahmeel.chapter.resource.ChapterResourceStore;
 import judgels.jerahmeel.role.RoleChecker;
 import judgels.service.actor.ActorChecker;
 import judgels.service.api.actor.AuthHeader;
@@ -28,6 +32,7 @@ public class ChapterResource {
     @Inject protected ActorChecker actorChecker;
     @Inject protected RoleChecker roleChecker;
     @Inject protected ChapterStore chapterStore;
+    @Inject protected ChapterResourceStore resourceStore;
 
     @Inject public ChapterResource() {}
 
@@ -56,6 +61,32 @@ public class ChapterResource {
         checkAllowed(roleChecker.isAdmin(actorJid));
 
         return chapterStore.createChapter(data);
+    }
+
+    @GET
+    @Path("/{chapterJid}/resources")
+    @Produces(APPLICATION_JSON)
+    @UnitOfWork(readOnly = true)
+    public List<judgels.jerahmeel.api.chapter.resource.ChapterResource> getResources(
+            @HeaderParam(AUTHORIZATION) Optional<AuthHeader> authHeader,
+            @PathParam("chapterJid") String chapterJid) {
+        actorChecker.check(authHeader);
+        checkFound(chapterStore.getChapterByJid(chapterJid));
+        return resourceStore.getResources(chapterJid);
+    }
+
+    @PUT
+    @Path("/{chapterJid}/resources")
+    @Consumes(APPLICATION_JSON)
+    @UnitOfWork
+    public void setResources(
+            @HeaderParam(AUTHORIZATION) AuthHeader authHeader,
+            @PathParam("chapterJid") String chapterJid,
+            List<ChapterResourceData> data) {
+        String actorJid = actorChecker.check(authHeader);
+        checkAllowed(roleChecker.isAdmin(actorJid));
+        checkFound(chapterStore.getChapterByJid(chapterJid));
+        resourceStore.setResources(chapterJid, data);
     }
 
     @POST

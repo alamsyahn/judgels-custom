@@ -29,9 +29,10 @@ describe('chapterResourceActions', () => {
       nockJerahmeel().get(`/chapters/${chapterJid}/lessons`).reply(200, responseBody);
 
       nockJerahmeel().get(`/chapters/${chapterJid}/problems`).reply(200, responseBody);
+      nockJerahmeel().get(`/chapters/${chapterJid}/resources`).reply(200, []);
 
       const response = await store.dispatch(chapterResourceActions.getResources(chapterJid));
-      expect(response).toEqual([responseBody, responseBody]);
+      expect(response).toEqual([responseBody, responseBody, []]);
     });
   });
 });

@@ -4,7 +4,7 @@ import { ContentCardLink } from '../../../../../../../../components/ContentCardL
 
 import './ChapterLessonCard.scss';
 
-export function ChapterLessonCard({ course, chapter, lesson, lessonName }) {
+export function ChapterLessonCard({ course, chapter, lesson, lessonName, displayAlias }) {
   return (
     <ContentCardLink
       className="chapter-lesson-card"
@@ -12,7 +12,7 @@ export function ChapterLessonCard({ course, chapter, lesson, lessonName }) {
     >
       <Book />
       <h4 data-key="name">
-        {lesson.alias}. {lessonName}
+        {displayAlias || lesson.alias}. {lessonName}
       </h4>
     </ContentCardLink>
   );

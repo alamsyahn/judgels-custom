@@ -81,7 +81,7 @@ export class ChapterProblemStatementPage extends Component {
 
     return (
       <ProblemWorksheetCard
-        alias={problem.alias}
+        alias={this.props.worksheet.navigation?.current?.displayAlias || problem.alias}
         latestSubmissions={latestSubmissions}
         onAnswerItem={this.createSubmission}
         worksheet={{ ...worksheet, reasonNotAllowedToSubmit }}

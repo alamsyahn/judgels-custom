@@ -1,5 +1,6 @@
 import { chapterLessonAPI } from '../../../../../../../../modules/api/jerahmeel/chapterLesson';
 import { chapterProblemAPI } from '../../../../../../../../modules/api/jerahmeel/chapterProblem';
+import { chapterResourceAPI } from '../../../../../../../../modules/api/jerahmeel/chapterResource';
 import { selectToken } from '../../../../../../../../modules/session/sessionSelectors';
 
 export function getResources(chapterJid) {
@@ -8,6 +9,7 @@ export function getResources(chapterJid) {
     return await Promise.all([
       chapterLessonAPI.getLessons(token, chapterJid),
       chapterProblemAPI.getProblems(token, chapterJid),
+      chapterResourceAPI.getResources(token, chapterJid),
     ]);
   };
 }

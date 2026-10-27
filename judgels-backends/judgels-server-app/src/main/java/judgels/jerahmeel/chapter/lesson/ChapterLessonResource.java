@@ -131,6 +131,7 @@ public class ChapterLessonResource {
                 .statement(statement)
                 .previousResourcePath(previousAndNextResourcePaths.get(0))
                 .nextResourcePath(previousAndNextResourcePaths.get(1))
+                .navigation(resourceStore.getNavigation(chapterJid, "/lessons/" + lessonAlias))
                 .build();
     }
 }

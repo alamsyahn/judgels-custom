@@ -1,9 +1,15 @@
-import { HTMLTable } from '@blueprintjs/core';
+import { Button, HTMLTable } from '@blueprintjs/core';
 import { Edit, Manual, Presentation } from '@blueprintjs/icons';
 
 import './ChaptersTable.scss';
 
-export function ChaptersTable({ chapters, onEditChapter, onEditChapterLessons, onEditChapterProblems }) {
+export function ChaptersTable({
+  chapters,
+  onEditChapter,
+  onEditChapterLessons,
+  onEditChapterProblems,
+  onEditChapterResources,
+}) {
   const renderHeader = () => {
     return (
       <thead>
@@ -27,6 +33,7 @@ export function ChaptersTable({ chapters, onEditChapter, onEditChapterLessons, o
           <Edit className="action" intent="primary" onClick={() => onEditChapter(chapter)} />
           <Presentation className="action" intent="primary" onClick={() => onEditChapterLessons(chapter)} />
           <Manual className="action" intent="primary" onClick={() => onEditChapterProblems(chapter)} />
+          <Button small minimal icon="sort" text="Atur konten" onClick={() => onEditChapterResources(chapter)} />
         </td>
       </tr>
     ));

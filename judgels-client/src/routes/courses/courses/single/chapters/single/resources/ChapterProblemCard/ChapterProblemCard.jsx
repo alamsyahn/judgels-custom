@@ -17,6 +17,7 @@ export function ChapterProblemCard({
   problemSetProblemPaths,
   progress,
   isFuture,
+  displayAlias,
 }) {
   const renderProblemSetProblemPaths = () => {
     if (!problemSetProblemPaths) {
@@ -46,7 +47,7 @@ export function ChapterProblemCard({
       <div className="chapter-problem-card__heading">
         {problem.type === ProblemType.Programming ? <Code /> : <Form />}
         <h4 data-key="name">
-          {problem.alias}. {problemName}
+          {displayAlias || problem.alias}. {problemName}
         </h4>
         {renderProblemSetProblemPaths()}
         {renderProgress()}

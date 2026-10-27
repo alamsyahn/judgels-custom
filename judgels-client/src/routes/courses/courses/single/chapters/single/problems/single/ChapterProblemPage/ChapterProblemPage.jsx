@@ -13,6 +13,10 @@ import { selectStatementLanguage } from '../../../../../../../../../modules/webP
 import { selectCourse } from '../../../../../../modules/courseSelectors';
 import { selectCourseChapter } from '../../../../modules/courseChapterSelectors';
 import { selectCourseChapters } from '../../../../modules/courseChaptersSelectors';
+import {
+  ChapterChallengeNotice,
+  ChapterChallengeTag,
+} from '../../../resources/ChapterChallengeNotice/ChapterChallengeNotice';
 import { ChapterNavigation } from '../../../resources/ChapterNavigation/ChapterNavigation';
 import ChapterProblemBundlePage from '../Bundle/ChapterProblemPage';
 import ChapterProblemProgrammingPage from '../Programming/ChapterProblemPage';
@@ -51,6 +55,7 @@ export class ChapterProblemPage extends Component {
     return (
       <div className="chapter-problem-page">
         {this.renderHeader()}
+        <ChapterChallengeNotice resource={this.state.response?.navigation?.current} />
         {this.renderContent()}
       </div>
     );
@@ -84,7 +89,14 @@ export class ChapterProblemPage extends Component {
       }
     );
 
-    this.props.onPushBreadcrumb(this.props.match.path, this.props.chapter.alias + ' / ' + response.problem.alias);
+    const resource = response.navigation?.current;
+    this.props.onPushBreadcrumb(
+      this.props.match.path,
+      this.props.chapter.alias +
+        ' / ' +
+        (resource?.section === 'CHALLENGE' ? 'Challenge ' : '') +
+        (resource?.displayAlias || response.problem.alias)
+    );
 
     sendGAEvent({ category: 'Courses', action: 'View course problem', label: this.props.course.name });
     sendGAEvent({ category: 'Courses', action: 'View chapter problem', label: this.props.chapter.name });
@@ -128,7 +140,8 @@ export class ChapterProblemPage extends Component {
           &nbsp;
           <ChevronRight className="chapter-problem-page__title--chevron" size={20} />
           &nbsp;
-          {match.params.problemAlias}. {problemTitle}
+          {response?.navigation?.current?.displayAlias || match.params.problemAlias}. {problemTitle}
+          <ChapterChallengeTag resource={response?.navigation?.current} />
         </h3>
 
         {this.renderProgress()}
@@ -158,7 +171,7 @@ export class ChapterProblemPage extends Component {
       return null;
     }
 
-    const { progress, previousResourcePath, nextResourcePath } = response;
+    const { progress, previousResourcePath, nextResourcePath, navigation } = response;
     return (
       <ChapterNavigation
         courseSlug={course.slug}
@@ -167,6 +180,7 @@ export class ChapterProblemPage extends Component {
         nextResourcePath={nextResourcePath}
         chapters={chapters}
         disableNext={progress?.verdict !== VerdictCode.AC}
+        navigation={navigation}
       />
     );
   };
